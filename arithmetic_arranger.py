@@ -9,12 +9,15 @@ MAX_ERRORS = 5
 
 def arithmetic_arranger(problems, print_result=False):
     if len(problems) > MAX_QUESTIONS:
-        return "Too many expressions. Maximun allowed are + MAX_QUESTIONS"
+        return "Error: Too many problems."
 
     (is_valid, errors) = valid(problems)
 
     if not is_valid:
-        return errors
+        errors_str = ''
+        for error in errors:
+            errors_str += error
+        return errors_str
 
     (upper_numbers, lower_numbers, operators) = extract_parts(problems)
 
@@ -60,7 +63,7 @@ def organize_printing(printing_data):
         if (print_result):
             new_result = add_result(upper_numbers[i],
                                     lower_numbers[i],
-                                    operators[i])
+                                    operators[i], expression_space)
             while len(new_result) < expression_space:
                 new_result = ' ' + new_result
             new_result += IN_BETWEEN_SPACE
@@ -80,17 +83,17 @@ def organize_printing(printing_data):
     return to_print
 
 
-def add_result(upper_number, lower_number, operator):
+def add_result(upper_number, lower_number, operator, expression_space):
     new_result = ''
     n1 = int(upper_number)
 
-    n2 = re.findall('\s(\d+)', lower_number)
+    n2 = re.findall('\s*(\d+)', lower_number)
     n2 = int(n2[0])
 
     if operator == '+':
-        new_result += str(n1 + n2)
+        new_result += f'{n1 + n2}'
     else:
-        new_result += str(n1 - n2)
+        new_result += f'{n1 - n2}'
 
     while len(new_result) < expression_space:
         new_result = ' ' + new_result
@@ -140,7 +143,8 @@ def detect_errors(problem, errors):
     found_error = False
     if type(problem) != type(''):
         errors.append(
-            "Bad formatting error. Only positive numbers are allowed")
+            # "Bad formatting error. Only positive numbers are allowed")
+            '')
         found_error = True
     else:
         badProblem = re.findall('[^\d+\-\s]', problem)
@@ -148,7 +152,7 @@ def detect_errors(problem, errors):
         if badProblem == []:
             parts = re.findall('\d+\s+|[+-]|\s+\d+', problem)
             if len(parts) < 3:
-                errors.append('Expression should have spaces around operator')
+                errors.append("Error: Operator must be '+' or '-'.")
                 found_error = True
             for part in parts:
                 part = part.strip()
@@ -163,7 +167,8 @@ def detect_errors(problem, errors):
 
         else:
             errors.append(
-                "Expression bad formating. Try 34 + 192, for example")
+                # "Expression bad formating. Try 34 + 192, for example")
+                '')
             transcribe_errors(badProblem, errors)
             found_error = True
     return found_error
@@ -178,7 +183,7 @@ def transcribe_errors(arr, errors):
         if re.match('[A-Za-z]', elem):
             errors.append("Arithmetic expressons can't have letters.")
         elif re.match('[*/]', elem):
-            errors.append("Not allowed operation, only + and - are valid.")
+            errors.append("Error: Operator must be \'+\' or \'-\'.")
         else:
             errors.append(
                 "Your expression should have only numbers and + or - operators.")
@@ -187,6 +192,7 @@ def transcribe_errors(arr, errors):
 
 
 # arithmetic_arranger(["32 + 169", "3801 - 2", "45 + 43", "1223 + 49"], True)
-str = arithmetic_arranger(['3801 - 2', '123 + 49'])
+str = arithmetic_arranger(
+    ['32 - 698', '1 / 3801', '45 + 43', '123 + 49', '988 + 40'], True)
 
 print(str)
