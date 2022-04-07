@@ -1,5 +1,4 @@
 import re
-import string
 
 EXPRESSION_SPACE = 7
 IN_BETWEEN_SPACE = "    "
@@ -9,11 +8,11 @@ MAX_ERRORS = 5
 
 def arithmetic_arranger(problems, print_result=False):
     if len(problems) > MAX_QUESTIONS:
-        print(f"Too many expressions. Maximun allowed are {MAX_QUESTIONS}")
-        return
+        return "Too many expressions. Maximun allowed are + MAX_QUESTIONS"
 
-    if not valid(problems):
-        return
+    (isValid, errors) = valid(problems)
+    if not isValid:
+        return errors
 
     print("\nLet's learn arithmetic!\n")
     (upper_numbers, lower_numbers, operators) = extract_parts(problems)
@@ -21,9 +20,7 @@ def arithmetic_arranger(problems, print_result=False):
     printing_data = [upper_numbers, lower_numbers, operators, print_result]
     stringsToPrint = organize_printing(printing_data)
 
-    for line in stringsToPrint:
-        print(line)
-    print()
+    return stringsToPrint
 
 
 def organize_printing(printing_data):
@@ -70,7 +67,7 @@ def organize_printing(printing_data):
             new_result += IN_BETWEEN_SPACE
             results_string += new_result
 
-    return [upper_string, lower_string, dashes_string, results_string]
+    return [upper_string+"\n", lower_string+"\n", dashes_string+"\n", results_string+"\n"]
 
 
 def extract_parts(problems):
@@ -95,7 +92,7 @@ def valid(problems):
     error_messages = []
     if (problems == [] or problems == None):
         error_messages.append(
-            "No expressions found. Provide expressions for calculations")
+            "No expressions found. Provide expressions for calculations\n")
         found_error = True
     else:
         found_error = False
@@ -107,11 +104,9 @@ def valid(problems):
             continue
 
     if (found_error):
-        for error in error_messages:
-            print("----\n", error, "\n----")
-            return False
+        return (False, error_messages)
 
-    return True
+    return (True, None)
 
 
 def detect_errors(problem, errors):
@@ -166,3 +161,4 @@ def transcribe_errors(arr, errors):
 
 #arithmetic_arranger(["32 + 169", "3801 - 2", "45 + 43", "1223 + 49"], True)
 arithmetic_arranger(["50 + 30"], True)
+
