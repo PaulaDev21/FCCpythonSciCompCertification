@@ -1,7 +1,7 @@
 import re
-from unittest import result
 
-# EXPRESSION_SPACE = 5
+from numpy import arange
+
 IN_BETWEEN_SPACE = "    "
 MAX_QUESTIONS = 5
 MAX_ERRORS = 5
@@ -19,16 +19,20 @@ def arithmetic_arranger(problems, print_result=False):
             errors_str += error
         return errors_str
 
-    (upper_numbers, lower_numbers, operators) = extract_parts(problems)
+    printing_data = extract_parts(problems)
+    printing_data.append(print_result)
 
-    printing_data = [upper_numbers, lower_numbers, operators, print_result]
-    stringsToPrint = organize_printing(printing_data)
+    stringToPrint = organize_printing(printing_data)
 
-    return stringsToPrint
+    return stringToPrint
 
 
 def organize_printing(printing_data):
-    (upper_numbers, lower_numbers, operators, print_result) = printing_data
+    (upper_numbers,
+     lower_numbers,
+     operators,
+     print_result) = printing_data
+
     upper_string = ''
     lower_string = ''
     dashes_string = ''
@@ -41,33 +45,53 @@ def organize_printing(printing_data):
         else:
             expression_space = len(lower_numbers[i]) + 2
 
-        new_dashes = ''
-        for n in range(0, expression_space):
-            new_dashes = new_dashes+'-'
-
-        while len(new_dashes) < expression_space:
-            new_dashes = ' ' + new_dashes
-        dashes_string += new_dashes + IN_BETWEEN_SPACE
-
-        while len(upper_numbers[i]) < expression_space:
-            upper_numbers[i] = ' '+upper_numbers[i]
-
-        upper_string += upper_numbers[i] + IN_BETWEEN_SPACE
-
-        while len(lower_numbers[i]) < expression_space - 2:
-            lower_numbers[i] = ' ' + lower_numbers[i]
-        new_lower = operators[i] + ' ' + lower_numbers[i]
-
-        lower_string += new_lower + IN_BETWEEN_SPACE
-
+        dashes_string += create_dashes_line(expression_space)
+        upper_string += create_upper_line(upper_numbers[i], expression_space)
+        lower_string += create_lower_line(lower_numbers[i],
+                                          operators[i], expression_space)
         if (print_result):
-            new_result = add_result(upper_numbers[i],
-                                    lower_numbers[i],
-                                    operators[i], expression_space)
-            while len(new_result) < expression_space:
-                new_result = ' ' + new_result
-            new_result += IN_BETWEEN_SPACE
+            results_string += create_result_line(upper_numbers[i],
+                                                 lower_numbers[i],
+                                                 operators[i], expression_space)
+    return join_lines(upper_string, lower_string, dashes_string, results_string, print_result)
 
+
+def create_dashes_line(expression_space):
+    new_dashes = ''
+    for n in range(0, expression_space):
+        new_dashes = new_dashes+'-'
+
+    while len(new_dashes) < expression_space:
+        new_dashes = ' ' + new_dashes
+    return new_dashes + IN_BETWEEN_SPACE
+
+
+def create_upper_line(upper_number, expression_space):
+    while len(upper_number) < expression_space:
+        upper_number = ' '+upper_number
+
+    return upper_number + IN_BETWEEN_SPACE
+
+
+def create_lower_line(lower_number, operator, expression_space):
+    while len(lower_number) < expression_space - 2:
+        lower_number = ' ' + lower_number
+    new_lower = operator + ' ' + lower_number
+
+    return new_lower + IN_BETWEEN_SPACE
+
+
+def create_result_line(upper_number, lower_number, operator, expression_space):
+    new_result = add_result(upper_number,
+                            lower_number,
+                            operator, expression_space)
+    while len(new_result) < expression_space:
+        new_result = ' ' + new_result
+
+    return new_result
+
+
+def join_lines(upper_string, lower_string, dashes_string, results_string, print_result):
     upper_string = upper_string.rstrip() + '\n'
     lower_string = lower_string.rstrip() + '\n'
     if print_result:
@@ -79,7 +103,6 @@ def organize_printing(printing_data):
     to_print = upper_string + lower_string + dashes_string
     if print_result:
         to_print += results_string
-
     return to_print
 
 
@@ -114,12 +137,13 @@ def extract_parts(problems):
 
         operators.append(parts[1].strip())
 
-    return (upper_numbers, lower_numbers, operators)
+    return [upper_numbers, lower_numbers, operators]
 
 
 # ---------------------------VALIDATION FUNCTIONS-------------------------------
 def valid(problems):
     error_messages = []
+    found_error = False
     if (problems == [] or problems == None):
         error_messages.append(
             "No expressions found. Provide expressions for calculations\n")
@@ -128,10 +152,10 @@ def valid(problems):
         found_error = False
 
     for problem in problems:
-        found = detect_errors(problem, error_messages)
-        if (found):
-            found_error = True
-            continue
+
+        found_error = detect_errors(problem, error_messages)
+        if found_error:
+            break
 
     if (found_error):
         return (False, error_messages)
@@ -141,58 +165,37 @@ def valid(problems):
 
 def detect_errors(problem, errors):
     found_error = False
-    if type(problem) != type(''):
-        errors.append(
-            # "Bad formatting error. Only positive numbers are allowed")
-            '')
+
+    parts = re.findall('\w+\s+|[+-]|\s+\w+', problem)
+    if len(parts) < 3:
+        errors.append("Error: Operator must be '+' or '-'.")
         found_error = True
-    else:
-        badProblem = re.findall('[^\d+\-\s]', problem)
 
-        if badProblem == []:
-            parts = re.findall('\d+\s+|[+-]|\s+\d+', problem)
-            if len(parts) < 3:
-                errors.append("Error: Operator must be '+' or '-'.")
-                found_error = True
-            for part in parts:
-                part = part.strip()
-                if len(part) > 4:
-                    errors.append("Number should have a maximun of 4 digits.")
-                    found_error = True
-                elif len(part) < 1:
-                    errors.append(
-                        "Expression should be formated as: number operator number")
-            if found_error:
-                transcribe_errors(badProblem, errors)
-
-        else:
+    for part in parts:
+        part = part.strip()
+        if len(part) > 4:
             errors.append(
-                # "Expression bad formating. Try 34 + 192, for example")
-                '')
-            transcribe_errors(badProblem, errors)
+                "Error: Numbers cannot be more than four digits.")
             found_error = True
+
+    if find_internal_errors(parts, errors) != []:
+        found_error = True
+
     return found_error
 
 
-def transcribe_errors(arr, errors):
-    if len(arr) == MAX_ERRORS:
-        return ["Too many errors! Are you sure you're using the right tool?"]
+def find_internal_errors(parts, errors):
 
-    for elem in arr:
+    for elem in parts:
+        if re.findall('[A-Za-z]', elem) != []:
+            errors.append("Error: Numbers must only contain digits.")
+        elif re.findall('[*/]', elem) != []:
+            errors.append("Error: Operator must be '+' or '-'.")
 
-        if re.match('[A-Za-z]', elem):
-            errors.append("Arithmetic expressons can't have letters.")
-        elif re.match('[*/]', elem):
-            errors.append("Error: Operator must be \'+\' or \'-\'.")
-        else:
-            errors.append(
-                "Your expression should have only numbers and + or - operators.")
+    if len(errors) == MAX_ERRORS:
+        return "Error: Too many errors."
 
     return errors
 
 
-# arithmetic_arranger(["32 + 169", "3801 - 2", "45 + 43", "1223 + 49"], True)
-str = arithmetic_arranger(
-    ['32 - 698', '1 / 3801', '45 + 43', '123 + 49', '988 + 40'], True)
-
-print(str)
+print(arithmetic_arranger(['98 + 35', '3801 - 2', '45 + 43', '123 + 49']))
