@@ -1,7 +1,5 @@
 import re
 import math
-from pandas import notnull
-
 from zmq import NULL
 
 WEEKDAYS = ["Sunday", "Monday", "Tuesday",
@@ -20,10 +18,10 @@ def print_new_time(summed, days, weekday):
     to_print = set_am_pm(summed)
     set_minutes(summed)
 
-    to_print = f'{summed[0]}' + ":" + f'{summed[1]}' + to_print    
-        
+    to_print = f'{summed[0]}' + ":" + f'{summed[1]}' + to_print
+
     if weekday != NULL:
-        position = WEEKDAYS.index(weekday)
+        position = WEEKDAYS.index(weekday.capitalize())
         position += days
         position %= 7
         to_print += f', {WEEKDAYS[position]}'
@@ -47,6 +45,8 @@ def set_am_pm(summed):
     if summed[0] > 12:
         summed[0] -= 12
         to_print = " PM"
+    elif summed[0] == 12:
+        to_print = " PM"
     else:
         to_print = " AM"
         if summed[0] == 0:
@@ -68,8 +68,8 @@ def find_values(start, duration):
 
 def set_universal_time(start_parts):
     if start_parts[2] == 'PM':
-        start_parts[0] = int(start_parts[0]) + 12
-    start_parts.pop()
+        if start_parts[0] != 12:
+            start_parts[0] = int(start_parts[0]) + 12
 
 
 def summing_times(start_parts, duration_parts):
@@ -89,7 +89,8 @@ def summing_times(start_parts, duration_parts):
         days = math.trunc(summed[0]/24)
         summed[0] = summed[0] % 24
 
+
     return (summed, days)
 
 
-print(add_time("11:59 PM", "250:05", 'Monday'))
+print(add_time("11:40 AM", "0:25"))
