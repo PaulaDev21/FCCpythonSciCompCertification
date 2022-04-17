@@ -13,9 +13,9 @@ class Category:
         self.ledger = []
 
     def __str__(self):
-        to_print = '\n' + self.print_title()+'\n'
+        to_print = self.print_title()+'\n'
         to_print += self.print_entries()
-        to_print += f"Total: {self.get_balance():.2f}" + '\n'
+        to_print += f"Total: {self.get_balance():.2f}"
 
         return to_print
 
@@ -43,7 +43,7 @@ class Category:
         entries_str = ''
         for entry in self.ledger:
             desc_str = entry["description"]
-            if len(desc_str) >= DESCRIPTION_WIDTH:
+            if len(desc_str) > DESCRIPTION_WIDTH:
                 desc_str = desc_str[0:23]
             else:
                 while len(desc_str) < DESCRIPTION_WIDTH:
@@ -51,8 +51,8 @@ class Category:
 
             amount_str = f'{entry["amount"]:.2f}'
 
-            if len(amount_str) > VALUE_WIDTH:
-                amount_str = f'{entry["amount"]:.0f}'
+            # if len(amount_str) > VALUE_WIDTH:
+            #     amount_str = f'{entry["amount"]:.0f}'
 
             while len(amount_str) < VALUE_WIDTH:
                 amount_str = ' ' + amount_str
@@ -88,14 +88,13 @@ class Category:
         return False
 
     def check_funds(self, amount):
-        #print(self.get_balance(), amount, self.get_balance() <= amount)
         if self.get_balance() < amount:
             return False
         return True
 
 
 def create_spend_chart(categories):
-    title = "\nPercentage spent by category\n"
+    title = "Percentage spent by category\n"
     to_print = ''
     names = []
     percents = []
@@ -108,7 +107,7 @@ def create_spend_chart(categories):
         percents.append(round(round(cat.get_balance()*100/total)/10))
 
     to_print = build_histogram(names, percents)
-    to_print = title + '\n'.join([*to_print]) + '\n'
+    to_print = title + '\n'.join([*to_print])
 
     return to_print
 
@@ -124,7 +123,7 @@ def build_histogram(names, percents):
         new_body.append(''.join(y_labels[i]) + ' ' + '  '.join([*h_line]))
         i += 1
 
-    x_line = '    -'
+    x_line = '    '
     while len(x_line) < len(new_body[0]):
         x_line += '---'
 
