@@ -74,6 +74,7 @@ class Category:
         sum = 0
         for op in self.ledger:
             sum += op["amount"]
+        sum = float(f"{sum:.2f}")
         return sum
 
     def get_name(self):
@@ -87,7 +88,8 @@ class Category:
         return False
 
     def check_funds(self, amount):
-        if self.get_balance() <= amount:
+        #print(self.get_balance(), amount, self.get_balance() <= amount)
+        if self.get_balance() < amount:
             return False
         return True
 
@@ -103,7 +105,7 @@ def create_spend_chart(categories):
         total += cat.get_balance()
 
     for cat in categories:
-        percents.append(round(cat.get_balance()*10/total))
+        percents.append(round(round(cat.get_balance()*100/total)/10))
 
     to_print = build_histogram(names, percents)
     to_print = title + '\n'.join([*to_print]) + '\n'
@@ -114,53 +116,52 @@ def create_spend_chart(categories):
 def build_histogram(names, percents):
     y_labels = build_labels_y()
     x_labels = build_labels_x(names)
-    hist_body = build_histogram_body(percents,len(y_labels))
+    hist_body = build_histogram_body(percents, len(y_labels))
 
-    i=0
+    i = 0
     new_body = []
     for h_line in np.transpose(hist_body):
         new_body.append(''.join(y_labels[i]) + ' ' + '  '.join([*h_line]))
         i += 1
 
-    x_line='    '
+    x_line = '    -'
     while len(x_line) < len(new_body[0]):
         x_line += '---'
-    
-    new_body.append(x_line)  
 
-    #while len(x_labels) < len(new_body)
+    new_body.append(x_line)
+
+    # while len(x_labels) < len(new_body)
     new_body += x_labels
-    
+
     return new_body
 
 
-
 def build_labels_y():
-    labels =[]
-    for perc in range(100,-10,-10):
+    labels = []
+    for perc in range(100, -10, -10):
         if perc == 0:
-            labels.append([' ', ' ',*str(perc), '|'])
+            labels.append([' ', ' ', *str(perc), '|'])
         elif perc == 100:
             labels.append([*str(perc), '|'])
         else:
-            labels.append([' ',*str(perc), '|'])
+            labels.append([' ', *str(perc), '|'])
     return labels
 
 
 def build_labels_x(names):
-    i=0
-    big=0
+    i = 0
+    big = 0
     big_index = -1
     for name in names:
         if len(name) > big:
             big = len(name)
-            big_index = i 
-        i =+ 1
+            big_index = i
+        i = + 1
 
     for name in names:
         while len(name) < big:
             name.append(' ')
-    
+
     labels = []
     for line in np.transpose(names):
         new_line = '  '.join(line)
@@ -196,3 +197,20 @@ e.withdraw(150, 'blouse')
 e.withdraw(929, 'Pants')
 
 print(create_spend_chart([c, d, e]))
+
+# food = Category("Food")
+# food.deposit(1000, "initial deposit")
+# food.withdraw(10.15, "groceries")
+# food.withdraw(15.89, "restaurant and more food for dessert")
+# print(food.get_balance())
+# clothing = Category("Clothing")
+# food.transfer(50, clothing)
+# clothing.withdraw(25.55)
+# clothing.withdraw(100)
+# auto = Category("Auto")
+# auto.deposit(1000, "initial deposit")
+# auto.withdraw(15)
+
+# print(create_spend_chart([food, clothing, auto]))
+
+# print("Percentage spent by category\n100|          \n 90|          \n 80|          \n 70|    o     \n 60|    o     \n 50|    o     \n 40|    o     \n 30|    o     \n 20|    o  o  \n 10|    o  o  \n  0| o  o  o  \n    ----------\n     B  F  E  \n     u  o  n  \n     s  o  t  \n     i  d  e  \n     n     r  \n     e     t  \n     s     a  \n     s     i  \n           n  \n           m  \n           e  \n           n  \n           t  ")
