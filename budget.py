@@ -51,9 +51,6 @@ class Category:
 
             amount_str = f'{entry["amount"]:.2f}'
 
-            # if len(amount_str) > VALUE_WIDTH:
-            #     amount_str = f'{entry["amount"]:.0f}'
-
             while len(amount_str) < VALUE_WIDTH:
                 amount_str = ' ' + amount_str
 
@@ -92,6 +89,13 @@ class Category:
             return False
         return True
 
+    def get_withdraws(self):
+        sum = 0
+        for entry in self.ledger:
+            if entry["amount"] < 0:
+                sum -= entry["amount"]
+        return sum
+
 
 def create_spend_chart(categories):
     title = "Percentage spent by category\n"
@@ -101,16 +105,24 @@ def create_spend_chart(categories):
     total = 0
     for cat in categories:
         names.append([*cat.get_name()])
-        total += cat.get_balance()
+        current_withdraw = cat.get_withdraws()
+        percents.append(current_withdraw)
+        total += current_withdraw
 
-    for cat in categories:
-        percents.append(round(round(cat.get_balance()*100/total)/10))
+    for i in range(0, len(percents)):
+        percents[i] = round(round(percents[i]*100/total)/10)
 
     to_print = build_histogram(names, percents)
     to_print = title + '\n'.join([*to_print])
 
     return to_print
 
+
+# def print_cats(categories):
+#     myStr=''
+#     for cat in categories:
+#         myStr += str(cat) + '\n'
+#     return myStr
 
 def build_histogram(names, percents):
     y_labels = build_labels_y()
@@ -123,13 +135,11 @@ def build_histogram(names, percents):
         new_body.append(''.join(y_labels[i]) + ' ' + '  '.join([*h_line]))
         i += 1
 
-    x_line = '    '
+    x_line = '    -'
     while len(x_line) < len(new_body[0]):
         x_line += '---'
 
     new_body.append(x_line)
-
-    # while len(x_labels) < len(new_body)
     new_body += x_labels
 
     return new_body
@@ -187,13 +197,15 @@ def build_histogram_body(percents, scale):
 c = Category("Entertainment")
 c.deposit(100, "open account")
 c.deposit(20, 'freela')
+c.withdraw(95.78, 'party')
 d = Category("Food")
-c.transfer(50, d)
-d.withdraw(28.40, "lunch")
+c.transfer(500, d)
+d.withdraw(128.40, "market")
+d.withdraw(5.00, "bus")
 e = Category("Clothes")
-e.deposit(1400, "new category")
-e.withdraw(150, 'blouse')
-e.withdraw(929, 'Pants')
+e.deposit(400, "new category")
+e.withdraw(50, 'blouse')
+e.withdraw(29, 'Pants')
 
 print(create_spend_chart([c, d, e]))
 
