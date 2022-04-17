@@ -1,5 +1,9 @@
 from copy import copy
 from math import trunc
+from re import I
+from unicodedata import name
+import numpy as np
+from pandas import to_pickle
 
 
 class Category:
@@ -89,7 +93,94 @@ class Category:
 
 
 def create_spend_chart(categories):
-    print("not yet")
+    title = "\nPercentage spent by category\n"
+    to_print = ''
+    names = []
+    percents = []
+    total = 0
+    for cat in categories:
+        names.append([*cat.get_name()])
+        total += cat.get_balance()
+
+    for cat in categories:
+        percents.append(round(cat.get_balance()*10/total))
+
+    to_print = build_histogram(names, percents)
+    to_print = title + '\n'.join([*to_print]) + '\n'
+
+    return to_print
+
+
+def build_histogram(names, percents):
+    y_labels = build_labels_y()
+    x_labels = build_labels_x(names)
+    hist_body = build_histogram_body(percents,len(y_labels))
+
+    i=0
+    new_body = []
+    for h_line in np.transpose(hist_body):
+        new_body.append(''.join(y_labels[i]) + ' ' + '  '.join([*h_line]))
+        i += 1
+
+    x_line='    '
+    while len(x_line) < len(new_body[0]):
+        x_line += '---'
+    
+    new_body.append(x_line)  
+
+    #while len(x_labels) < len(new_body)
+    new_body += x_labels
+    
+    return new_body
+
+
+
+def build_labels_y():
+    labels =[]
+    for perc in range(100,-10,-10):
+        if perc == 0:
+            labels.append([' ', ' ',*str(perc), '|'])
+        elif perc == 100:
+            labels.append([*str(perc), '|'])
+        else:
+            labels.append([' ',*str(perc), '|'])
+    return labels
+
+
+def build_labels_x(names):
+    i=0
+    big=0
+    big_index = -1
+    for name in names:
+        if len(name) > big:
+            big = len(name)
+            big_index = i 
+        i =+ 1
+
+    for name in names:
+        while len(name) < big:
+            name.append(' ')
+    
+    labels = []
+    for line in np.transpose(names):
+        new_line = '  '.join(line)
+        labels.append('     ' + new_line)
+
+    return labels
+
+
+def build_histogram_body(percents, scale):
+    body = []
+
+    for size in percents:
+        col = []
+        for i in range(1, scale-size):
+            col.append(' ')
+        while len(col) < scale:
+            col.append('o')
+        body.append(col)
+
+    return body
 
 
 # =====================================
@@ -99,5 +190,9 @@ c.deposit(20, 'freela')
 d = Category("Food")
 c.transfer(50, d)
 d.withdraw(28.40, "lunch")
-print(c)
-print(d)
+e = Category("Clothes")
+e.deposit(1400, "new category")
+e.withdraw(150, 'blouse')
+e.withdraw(929, 'Pants')
+
+print(create_spend_chart([c, d, e]))
