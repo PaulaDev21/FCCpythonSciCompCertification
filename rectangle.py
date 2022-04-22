@@ -36,12 +36,11 @@ class Rectangle:
         if self.width > MAX_SIDE or self.height > MAX_SIDE:
             return "Too big for picture."
         pic = ''
-        print(self.width, self.height)
         for i in range(0, self.height):
             for j in range(0, self.width):
                 pic += "*"
             pic += '\n'
-        return pic[0:len(pic)-1]
+        return pic
 
     def get_amount_inside(self, insider_rect):
         if insider_rect.get_width() > self.width or insider_rect.get_height() > self.height:
@@ -55,13 +54,13 @@ class Rectangle:
 # ------------- FAST TESTS ---------------
 
 
-r = Rectangle(5, 3)
-print(r.get_diagonal())
-print(r.get_area())
-print(r.get_picture())
+# r = Rectangle(5, 3)
+# print(r.get_diagonal())
+# print(r.get_area())
+# print(r.get_picture())
 
-r2 = Rectangle(0.6, 2.2)
+# r2 = Rectangle(0.6, 2.2)
 
-print(r, r2)
+# print(r, r2)
 
-print(r.get_amount_inside(r2))
+# print(r.get_amount_inside(r2))
