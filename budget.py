@@ -28,14 +28,21 @@ def prepare_data(categories):
 def build_histogram(names, percents):
     y_labels = build_labels_y()
     x_labels = build_labels_x(names)
+
     hist_body = build_histogram_body(percents, len(y_labels), y_labels)
-   
-    x_line = '    --'
-    while len(x_line) < 3*len(names)+3:
-        x_line += '---'
-    hist_body += x_line + '--'
     hist_body += x_labels
-    return hist_body
+
+    x_line = build_horiz_line(len(names))
+    
+    return hist_body + x_line
+
+
+def build_horiz_line(quant_categories)
+    x_line = '    --'
+    while len(x_line) < 3*(quant_categories+1):
+        x_line += '---'
+    x_line + '--'
+    return x_line
 
 
 def build_labels_y():
