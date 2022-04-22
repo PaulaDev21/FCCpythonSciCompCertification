@@ -51,16 +51,3 @@ class Rectangle:
 
         return n_vertical * n_horizontal
 
-# ------------- FAST TESTS ---------------
-
-
-# r = Rectangle(5, 3)
-# print(r.get_diagonal())
-# print(r.get_area())
-# print(r.get_picture())
-
-# r2 = Rectangle(0.6, 2.2)
-
-# print(r, r2)
-
-# print(r.get_amount_inside(r2))
