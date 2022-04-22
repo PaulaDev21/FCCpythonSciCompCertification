@@ -9,7 +9,6 @@ def create_spend_chart(categories):
     to_print = title + '\n' + to_print
     return to_print
 
-
 def prepare_data(categories):
     names = []
     percents = []
@@ -24,7 +23,7 @@ def prepare_data(categories):
         percents[i] = floor(percents[i]*10/total)
 
     return (names, percents)
-    
+
 
 def build_histogram(names, percents):
     y_labels = build_labels_y()
