@@ -31,7 +31,7 @@ def build_histogram(names, percents):
 
     hist_body = build_histogram_body(percents, len(y_labels), y_labels)
     hist_body += build_horiz_line(len(names))
-        
+
     return hist_body + x_labels
 
 
@@ -100,81 +100,7 @@ def build_histogram_core(percents, scale):
         core.append(col)
     return core
 
-def compare_results(output, manual):
-    print(f"\nLen(output): {len(output)}")
-    print(f"Len(manual): {len(manual)}\n")
-
-    new_output = ''
-    new_manual = ''
-    for i in range(0,len(output)):
-        
-        # if (output[i] != manual[i]):
-        #     print(f"i: {i}\noutuput = {ord(output[i])}({output[i]}) manual = {ord(manual[i])}({manual[i]})")
-        #     print(f"output: {output[i-1]}")
-        #     print(f"manual: {manual[i-1]}")
-        #     count += 1
-        #     if count == 10:
-        if output[i] == ' ':
-            new_output += '-'
-        elif output[i] == '\n':
-            new_output += '*\n'
-        else:
-            new_output += output[i]
-    
-    for i in range(0,len(manual)):
-        if manual[i] == ' ':
-            new_manual += '-'
-        elif manual[i] == '\n':
-            new_manual += '*\n'
-        else:
-            new_manual += manual[i]
-
-    # for i in range(0,10):
-    #     print(new_output[i] + ' <===> ' + new_manual[i])
-    
-    print(new_output, '\n', new_manual, len(new_output), len(new_manual))
-    return
-        
-
-
-
-
-
-# =====================================
-c = Category("Entertainment")
-c.deposit(1000, "open account")
-c.deposit(20, 'freela')
-c.withdraw(195.78, 'party')
-
-d = Category("Food")
-c.transfer(500,d)
-d.withdraw(128.40, "market")
-d.withdraw(35.00, "bus")
-e = Category("Clothes")
-e.deposit(400, "new category")
-e.withdraw(50, 'blouse')
-e.withdraw(79, 'Pants')
-
-# print(c)
-# print(d)
-# print(e)
-
-
-# food = Category("Food")
-# food.deposit(1000, "initial deposit")
-# food.withdraw(10.15, "groceries")
-# food.withdraw(15.89, "restaurant and more food for dessert")
-# print(food.get_balance())
-# clothing = Category("Clothing")
-# food.transfer(50, clothing)
-# clothing.withdraw(25.55)
-# clothing.withdraw(100)
-# auto = Category("Auto")
-# auto.deposit(1000, "initial deposit")
-# auto.withdraw(15)
-
-# print(create_spend_chart([food, clothing, auto]))
-
+#================ QUICK TESTING ==============
 goal = "Percentage spent by category\n100|          \n 90|        \n 80|          \n 70|    o     \n 60|    o     \n 50|    o     \n 40|    o     \n 30|    o     \n 20|    o  o  \n 10|    o  o  \n  0| o  o  o  \n    ----------\n     B  F  E  \n     u  o  n  \n     s  o  t  \n     i  d  e  \n     n     r  \n     e     t  \n     s     a  \n     s     i  \n           n  \n           m  \n           e  \n           n  \n           t  "
 
 
@@ -192,4 +118,4 @@ ent.withdraw(20)
 computed = create_spend_chart([bis, food, ent])
 print("MINE: \n" + computed)
 print("GOAL:\n" + goal)
-compare_results(computed, goal)
+
