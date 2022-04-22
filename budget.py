@@ -37,7 +37,7 @@ def build_histogram(names, percents):
     return hist_body + x_line
 
 
-def build_horiz_line(quant_categories)
+def build_horiz_line(quant_categories):
     x_line = '    --'
     while len(x_line) < 3*(quant_categories+1):
         x_line += '---'
@@ -58,14 +58,11 @@ def build_labels_y():
 
 
 def build_labels_x(names):
-    i = 0
+
     big = 0
-    big_index = -1
     for name in names:
         if len(name) > big:
             big = len(name)
-            big_index = i
-        i = + 1
 
     for name in names:
         while len(name) < big:
