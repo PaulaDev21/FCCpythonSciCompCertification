@@ -1,7 +1,5 @@
 from copy import copy
-from hashlib import new
-from math import trunc, floor
-import numpy as np
+from math import trunc
 
 class Category:
 
@@ -33,27 +31,40 @@ class Category:
 
         return toPrint
 
-    def print_entries(self):
+    def get_short_description(self, desc_str):
         DESCRIPTION_WIDTH = 23
-        VALUE_WIDTH = 7
 
+        if len(desc_str) > DESCRIPTION_WIDTH:
+            desc_str = desc_str[0:DESCRIPTION_WIDTH]
+        else:
+            while len(desc_str) < DESCRIPTION_WIDTH:
+                desc_str += ' '
+        return desc_str
+
+
+    def print_entries(self):  
         entries_str = ''
         for entry in self.ledger:
-            desc_str = entry["description"]
-            if len(desc_str) > DESCRIPTION_WIDTH:
-                desc_str = desc_str[0:23]
-            else:
-                while len(desc_str) < DESCRIPTION_WIDTH:
-                    desc_str += ' '
-
-            amount_str = f'{entry["amount"]:.2f}'
-
-            while len(amount_str) < VALUE_WIDTH:
-                amount_str = ' ' + amount_str
+            desc_str = self.get_short_description(entry["description"])
+            amount_str = self.get_amount_formated(entry["amount"])
 
             entries_str += desc_str + amount_str + '\n'
 
         return entries_str
+    
+
+    def get_amount_formated(self, amount):
+        VALUE_WIDTH = 7
+        amount_str = f'{amount:.2f}'
+
+        while len(amount_str) < VALUE_WIDTH:
+            amount_str = ' ' + amount_str
+
+        return amount_str
+
+
+    
+
 
     def deposit(self, amount, description=''):
         self.ledger.append({"amount": amount, "description": description})
