@@ -30,11 +30,9 @@ def build_histogram(names, percents):
     x_labels = build_labels_x(names)
 
     hist_body = build_histogram_body(percents, len(y_labels), y_labels)
-    hist_body += x_labels
-
-    x_line = build_horiz_line(len(names))
-    
-    return hist_body + x_line
+    hist_body += build_horiz_line(len(names))
+        
+    return hist_body + x_labels
 
 
 def build_horiz_line(quant_categories):
@@ -77,25 +75,30 @@ def build_labels_x(names):
 
 
 def build_histogram_body(percents, scale, y_labels):
-    body = []
+    body = build_histogram_core(percents, scale)
+    return build_histogram_top(body, y_labels)
 
+
+def build_histogram_top(body, y_labels):
+    i = 0
+    new_body = ''
+
+    for h_line in np.transpose(body):
+        new_line = ''.join(y_labels[i]) + ' ' + '  '.join([*h_line])
+        new_body += new_line + '  \n'
+        i += 1
+    return new_body
+
+def build_histogram_core(percents, scale):
+    core = []
     for size in percents:
         col = []
         for i in range(1, scale-size):
             col.append(' ')
         while len(col) < scale:
             col.append('o')
-        body.append(col)
-
-    i = 0
-    new_body = ''
-    new_line = ''
-    for h_line in np.transpose(body):
-        new_line = ''.join(y_labels[i]) + ' ' + '  '.join([*h_line])
-        new_body += new_line + '  \n'
-        i += 1
-
-    return new_body
+        core.append(col)
+    return core
 
 def compare_results(output, manual):
     print(f"\nLen(output): {len(output)}")
