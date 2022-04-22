@@ -37,9 +37,9 @@ def build_histogram(names, percents):
 
 def build_horiz_line(quant_categories):
     x_line = '    --'
-    while len(x_line) < 3*(quant_categories+1):
+    while len(x_line) < 3*quant_categories + 3:
         x_line += '---'
-    x_line + '--'
+    x_line += '--'
     return x_line
 
 
@@ -100,8 +100,26 @@ def build_histogram_core(percents, scale):
         core.append(col)
     return core
 
+
 #================ QUICK TESTING ==============
-goal = "Percentage spent by category\n100|          \n 90|        \n 80|          \n 70|    o     \n 60|    o     \n 50|    o     \n 40|    o     \n 30|    o     \n 20|    o  o  \n 10|    o  o  \n  0| o  o  o  \n    ----------\n     B  F  E  \n     u  o  n  \n     s  o  t  \n     i  d  e  \n     n     r  \n     e     t  \n     s     a  \n     s     i  \n           n  \n           m  \n           e  \n           n  \n           t  "
+def visual_comparison(s1, s2):
+    print(make_visible(s1))
+    print(make_visible(s2))
+
+def make_visible(chart):
+    s1 = chart
+    ns1=''
+    for lt in s1:
+        if lt == ' ':
+            ns1 += '.'
+        elif lt == '\n':
+            ns1 += '&\n'
+        else:
+            ns1 += lt
+    return ns1
+
+
+goal = "Percentage spent by category\n100|          \n 90|          \n 80|          \n 70|    o     \n 60|    o     \n 50|    o     \n 40|    o     \n 30|    o     \n 20|    o  o  \n 10|    o  o  \n  0| o  o  o  \n    ----------\n     B  F  E  \n     u  o  n  \n     s  o  t  \n     i  d  e  \n     n     r  \n     e     t  \n     s     a  \n     s     i  \n           n  \n           m  \n           e  \n           n  \n           t  "
 
 
 bis = Category('Business')
@@ -116,6 +134,8 @@ ent.deposit(100)
 ent.withdraw(20)
 
 computed = create_spend_chart([bis, food, ent])
-print("MINE: \n" + computed)
-print("GOAL:\n" + goal)
+#print("MINE: \n" + computed)
+#print("GOAL:\n" + goal)
+visual_comparison(computed,goal)
+print(f"sizes, mine = {len(computed)}, goal = {len(goal)}")
 
