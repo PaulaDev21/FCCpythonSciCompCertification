@@ -4,4 +4,5 @@ This repository has my code for the five projects for the freecodecamp.org certi
 - arithmetic_arranger - done
 - time_calculator - done
 - budget - done
-- Rectangles 
+- Rectangles - done
+- Probabilities 
