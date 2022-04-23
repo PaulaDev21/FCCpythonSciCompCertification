@@ -1,7 +1,5 @@
-import copy
+import copy as cp
 import random
-
-
 
 class Hat:
     def __init__(self,**kargs):
@@ -10,26 +8,34 @@ class Hat:
             for i in range(0,quant):
                 self.contents.append(color)
             
-    def draw(self, quant_balls):
+    def draw(self, quant_balls):        
+        #random.shuffle(self.contents)        
         if quant_balls > len(self.contents):
-            return random.sample(self.contents, k=len(self.contents))
-        return random.sample(self.contents, k=quant_balls)
-
+            return self.contents
+        my_sample = random.sample(self.contents,k=quant_balls)
+        self.remove(my_sample)
+        return my_sample
+    
+    def remove(self,sample):
+        for color in sample:
+            pos = self.contents.index(color)
+            self.contents.pop(pos)
 
 def experiment(hat, expected_balls, num_balls_drawn, num_experiments):
-    if total_balls(expected_balls) > num_balls_drawn:
-        print("Drawing too few balls, draw more")
+    if len(expected_balls) > num_balls_drawn:
+        print("Drawing too few balls, draw more units")
         return 0 
     
-    equal_expected=0
+    got_it=0
 
     for i in range(num_experiments):
-        balls = hat.draw(num_balls_drawn)
+        new_hat = cp.deepcopy(hat)
+        balls = new_hat.draw(num_balls_drawn)
         drawn_balls  = count_balls_by_color(balls)
         if contains(drawn_balls, expected_balls):
-            equal_expected += 1
+            got_it += 1
         
-    return equal_expected/num_experiments
+    return got_it/num_experiments
 
 def total_balls(obj):
     total = 0
@@ -69,6 +75,6 @@ def contains(drawn_balls, expected_balls):
 #---------------------QUICK TEST---------------------------
 h = Hat(blue=10, red=3, orange=8)
 
-for i in range(6):
+for i in range(4):
     n_exp = 10 ** (i + 1) 
-    print(experiment(h, {"blue": 2, "red": 1}, 5, n_exp))
+    print(experiment(h, {'orange': 1, 'red': 1}, 10, n_exp))
